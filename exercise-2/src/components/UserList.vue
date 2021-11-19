@@ -87,6 +87,7 @@
     :closeFn="closeEditDialog"
     :userId="selectedUserId"
     dialogTitle="Edit User"
+    v-if="selectedUserId"
     v-slot:default="{close, id}"
   >
     <EditUser :close="close" :id="id"

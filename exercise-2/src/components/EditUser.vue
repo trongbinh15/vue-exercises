@@ -86,9 +86,7 @@
     inject: ['userService'],
 
     created: async function() {
-      setTimeout(async () => {
-        await this.loadUser() ;
-      }, 100);
+      await this.loadUser() ;
     },
 
     methods: {
@@ -114,7 +112,5 @@
         this.phone = phone;
       }
     }
-
-    
   }
 </script>
