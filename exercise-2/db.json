@@ -1,0 +1,16 @@
+{
+  "users": [
+    {
+      "id": "60bcac2e-1405-4f55-a41d-d0e64694d102",
+      "name": "Trong Binh",
+      "username": "trongbinh15",
+      "phone": "123"
+    },
+    {
+      "id": "741b5f23-a0b8-4010-b899-5e8efc6bdb09",
+      "name": "Binh",
+      "username": "trongbinh16",
+      "phone": "123"
+    }
+  ]
+}

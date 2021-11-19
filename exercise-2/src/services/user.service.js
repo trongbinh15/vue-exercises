@@ -1,9 +1,9 @@
 import http from "./http-common";
-class DataService {
+class UserService {
   getAll() {
-    return http.get('https://jsonplaceholder.typicode.com/users')
+    return http.get('/users')
     .then(response => {
-      this.info = response.data.bpi
+      this.info = response.data
     })
     .catch(error => {
       console.log(error)
@@ -12,19 +12,18 @@ class DataService {
     .finally(() => this.loading = false)
   }
   getDetail(id) {
-        return http.get(`https://jsonplaceholder.typicode.com/users/${id}`)
+    return http.get(`/users/${id}`)
   }
   addOne(info) {
-    return http.post(`https://jsonplaceholder.typicode.com/users`, info)
+    return http.post(`/users`, info)
   }
   updateOne(info) {
-    return http.put(`https://jsonplaceholder.typicode.com/users/${info.id}`, info)
-
+    return http.put(`/users/${info.id}`, info)
   }
-  deleteOne(id) {
-    return http.delete(`https://jsonplaceholder.typicode.com/users/${id}`)
 
+  deleteOne(id) {
+    return http.delete(`/users/${id}`)
   }
 }
 
-export default new DataService;
+export default UserService;

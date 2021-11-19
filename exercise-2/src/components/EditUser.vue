@@ -40,7 +40,7 @@
         <v-btn
           color="blue darken-1"
           text
-          @click="addNewUser"
+          @click="editUser"
         >
           Save
         </v-btn>
@@ -52,7 +52,7 @@
       timeout="1000"
       centered
     >
-      {{ newUserAddedText }}
+      {{ updateUserText }}
       <template v-slot:action="{ attrs }">
         <v-btn
           color="blue"
@@ -68,34 +68,53 @@
 </template>
 
 <script>
-import { v4 as uuid } from 'uuid';
   export default {
-    name: 'AddNewUser',
+    name: 'EditUser',
     props: {
       dialog: Boolean,
-      close: Function
+      close: Function,
+      id: String
     },
-    inject: ['userService'],
+
     data: () => ({
       snackbar: false,
-      newUserAddedText: 'Successfully added one new user: ',
+      updateUserText: 'Successfully update user: ',
       name: '',
       username: '',
       phone: '',
     }),
+    inject: ['userService'],
+
+    created: async function() {
+      setTimeout(async () => {
+        await this.loadUser() ;
+      }, 100);
+    },
+
     methods: {
-      async addNewUser(){
-        await this.userService.addOne({
-          id: uuid(),
+      async editUser(){
+        await this.userService.updateOne({
+          id: this.id,
           name: this.name,
           username: this.username,
           phone: this.phone
         });
         this.snackbar = true;
+
         setTimeout(() => {
           this.close();
         }, 1200);
+      },
+
+      async loadUser(){
+        const res = await this.userService.getDetail(this.id);
+        const {name, username, phone} = res.data;
+        this.username = username;
+        this.name = name;
+        this.phone = phone;
       }
     }
+
+    
   }
 </script>

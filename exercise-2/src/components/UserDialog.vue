@@ -9,8 +9,7 @@
       <v-card-title>
         <span class="headline">{{dialogTitle}}</span>
       </v-card-title>
-      
-      <slot></slot>
+      <slot :close="closeFn" :id="userId"></slot>
     </v-card>
     </v-dialog>
   </v-row>
@@ -24,11 +23,15 @@
       dialog: {
         type: Boolean,
       },
+      userId: {
+        type: String
+      },
       dialogTitle: {
         type: String,
       },
-     
+      closeFn: {
+        type: Function
+      }
     },
-
   }
 </script>

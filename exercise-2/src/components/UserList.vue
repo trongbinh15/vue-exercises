@@ -19,7 +19,7 @@
       class="btnAdd"
       color="primary"
       dark
-      @click="dialog=true"
+      @click="dialogAdd=true"
     >
       New User
     </v-btn>
@@ -47,6 +47,7 @@
         <tr
           v-for="user in userList"
           :key="user.id"
+          @click="selectedUserId = user.id"
         >
           <td>{{ user.name }}</td>
           <td>{{ user.username }}</td>
@@ -55,13 +56,13 @@
             <v-icon
                 large
                 class="mr-2"
-                @click="() => {}"
+                @click="dialogEdit=true"
               >
                 mdi-pencil
             </v-icon>
               <v-icon
                 large
-                @click="() => {}"
+                @click="deleteUser(user.id)"
               >
                 mdi-delete
               </v-icon>
@@ -70,19 +71,32 @@
       </tbody>
     </template>
   </v-simple-table>
+
   <UserDialog
-    :dialog="dialog"
+    :dialog="dialogAdd"
+    :closeFn="closeAddDialog"
     dialogTitle="Add New User"
+    v-slot:default="{close}"
   >
-    <AddNewUser
-     
+    <AddNewUser :close="close"
+    />
+  </UserDialog>
+
+  <UserDialog
+    :dialog="dialogEdit"
+    :closeFn="closeEditDialog"
+    :userId="selectedUserId"
+    dialogTitle="Edit User"
+    v-slot:default="{close, id}"
+  >
+    <EditUser :close="close" :id="id"
     />
   </UserDialog>
 
   
   <v-snackbar
     v-model="snackbar"
-    timeout="-1"
+    timeout="1000"
     centered
   >
     Successfully deleted one user
@@ -103,28 +117,50 @@
 </template>
 <script>
 import AddNewUser from '@/components/AddNewUser'
+import EditUser from '@/components/EditUser'
 import UserDialog from '@/components/UserDialog'
-// import http from "../services/http-common";
 
 export default {
   name: "UserList",
   components: {
     AddNewUser,
+    EditUser,
     UserDialog,
   },
   data() {
     return {
       userList: [],
       error: null,
-      successfullyDeleteUser: false,
       actionVisible: true,
-      dialog: false,
+      dialogAdd: false,
       dialogEdit: false,
       selectedUserId: null,
       snackbar: false,
     }
   },
-
+  inject: ['userService'],
+  created: async function() {
+    await this.loadUsers();
+  },
+  methods: {
+    closeAddDialog(){
+      this.dialogAdd = false;
+      this.loadUsers();
+    },
+    closeEditDialog(){
+      this.dialogEdit = false;
+      this.loadUsers();
+    },
+    async loadUsers(){
+      await this.userService.getAll();
+      this.userList = this.userService.info;
+    },
+    async deleteUser(id){
+      await this.userService.deleteOne(id);
+      this.snackbar = true;
+      this.loadUsers();
+    }
+  }
 }
 </script>
 
