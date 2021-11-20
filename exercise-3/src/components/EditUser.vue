@@ -49,7 +49,7 @@
 
      <v-snackbar
       v-model="snackbar"
-      timeout="1000"
+      timeout="-1"
       centered
     >
       {{ newUserAddedText }}
@@ -69,49 +69,66 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
-import { v4 as uuid } from 'uuid';
+import { mapActions, mapGetters } from "vuex";
 import {
-  ADD_NEW_USER,
-} from '@/store/actions.type'
+  UPDATE_USER,
+  GET_CURRENT_USER
+  } from '@/store/actions.type'
   export default {
-    name: 'AddNewUser',
+    name: 'EditUser',
     props: {
     },
 
     data: () => ({
       snackbar: false,
-      newUserAddedText: 'Successfully added one new user: ',
+      newUserAddedText: 'Successfully update user: ',
       name: '',
       username: '',
       phone: '',
     }),
+    computed: {
+      ...mapGetters(['userById']),
+      currentUser(){
+         return this.userById(this.$attrs.userId);
+      }
+    },
     methods: {
       setDialog(status) {
         this.$emit('setDialogChildren', status)
       },
       ...mapActions({
-        addUser: ADD_NEW_USER
+        updateUser: UPDATE_USER,
+        getUser: GET_CURRENT_USER
       }),
-
       async saveInfo(){
         const payload  = {
-          id: uuid(),
+          id: this.$attrs.userId,
           name: this.name,
           username: this.username,
           phone: this.phone
         }
-        await this.addUser(payload);
+        await this.updateUser(payload);
         this.snackbar = true;
-        this.clear();
-        setTimeout(() => {
-          this.setDialog(false);
-        }, 1200);
+        this.closeDialog();
       },
       clear(){
         this.name = '';
         this.username ='';
         this.phone = '';
+      },
+      closeDialog(){
+        setTimeout(() => {
+          this.setDialog(false);
+          this.clear();
+        }, 1200);
+      }
+    },
+    watch: {
+      currentUser: function(value){
+        const {name, username, phone} = value;
+        this.username = username;
+        this.name = name;
+        this.phone = phone;
       }
     }
   }

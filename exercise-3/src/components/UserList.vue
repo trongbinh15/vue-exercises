@@ -26,17 +26,17 @@
           <td>{{ user.name }}</td>
           <td>{{ user.username }}</td>
           <td>{{ user.phone }}</td>
-          <td v-if="actionVisible">
+          <td v-if="actionVisible" @click="selectedUserId = user.id">
             <v-icon
                 large
                 class="mr-2"
-                @click="() => {}"
+                @click="dialog=true"
               >
                 mdi-pencil
             </v-icon>
               <v-icon
                 large
-                @click="() => {}"
+                @click="deleteUser(user.id)"
               >
                 mdi-delete
               </v-icon>
@@ -48,7 +48,7 @@
   <UserDialog
     :dialog="dialog"
     dialogTitle="Edit an User"
-    v-if="dialog"
+    v-if="dialog && selectedUserId"
   >
     <EditUser
       :userId="selectedUserId"
@@ -57,7 +57,7 @@
   </UserDialog>
   <v-snackbar
       v-model="snackbar"
-      timeout="-1"
+      timeout="1000"
       centered
     >
       The user has been deleted
@@ -75,18 +75,19 @@
 </div>
 </template>
 <script>
-// import { mapGetters, mapActions, mapMutations } from "vuex";
+import { mapGetters, mapActions } from "vuex";
 import UserDialog from '@/components/UserDialog'
+import EditUser from '@/components/EditUser';
 import {
-  // LOAD_USER_LIST,
-  // DELETE_USER,
-  // RESET_FORM_EDIT_ADD,
+  LOAD_USER_LIST,
+  DELETE_USER,
 } from '@/store/actions.type'
 
   export default {
     name: "UserList",
     components: {
       UserDialog,
+      EditUser,
     },
     data() {
       return {
@@ -97,7 +98,22 @@ import {
         originalUserListLength: 0,
       }
     },
-    
+    computed: {
+      ...mapGetters(['userList']),
+    },
+    methods: {
+      ...mapActions({
+        loadUsers: LOAD_USER_LIST,
+        dispatchDeleteUser: DELETE_USER,
+      }),
+      async deleteUser(id){
+        await this.dispatchDeleteUser(id);
+        this.snackbar = true;
+      },
+    },
+    created: async function (){
+      await this.loadUsers();
+    }
 
 }
 </script>
